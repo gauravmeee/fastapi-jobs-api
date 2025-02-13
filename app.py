@@ -1,19 +1,16 @@
-from flask import Flask, jsonify
+from fastapi import FastAPI
 import asyncio
-from telegram_scraper import get_messages  # Import the get_messages function
+from telegram_scraper import get_messages
 
-app = Flask(__name__)
+app = FastAPI()
 
-@app.route('/', methods=['GET'])
+@app.get("/")
 async def get_jobs():
     try:
-        jobs = await get_messages()  # Await the async function
+        jobs = await get_messages()  # Use await for async function
         if jobs:
-            return jsonify(jobs), 200
+            return jobs
         else:
-            return jsonify({"message": "No jobs found"}), 404
+            return {"message": "No jobs found"}
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-if __name__ == '__main__':
-    app.run(debug=True)  # Run the Flask app in debug mode
+        return {"error": str(e)}
