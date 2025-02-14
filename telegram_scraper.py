@@ -37,11 +37,15 @@ async def get_messages():
                 "expected_ctc": re.search(r"Expected\s*CTC:\s*(.+?)\s*(?:Expected Stipend|Apply|Expected Benefits|$)", text, re.IGNORECASE),
                 "expected_stipend": re.search(r"Expected\s*Stipend:\s*(.+?)\s*(?:Apply|Expected Benefits|Expected CTC|$)", text, re.IGNORECASE),
                 "expected_benefits": re.search(r"Expected\s*Benefits:\s*(.+?)\s*(?:Apply|Expected CTC|$)", text, re.IGNORECASE),
+                "date_posted": message.date.strftime('%Y-%m-%d %H:%M:%S')  # Format the date of posting
             }
 
             # Convert MatchObject to string (handling None cases)
             for key, match in job_data.items():
-                job_data[key] = match.group(1).strip() if match else None
+                if match:
+                    job_data[key] = match.group(1).strip() if hasattr(match, 'group') else match
+                else:
+                    job_data[key] = None
             
             # Store only if essential fields are found
             if job_data["company"] and job_data["role"] and job_data["batch_eligible"] and job_data["location"] and job_data["apply_link"]:
@@ -53,14 +57,14 @@ async def get_messages():
         print(f"Error: {e}")
         return []  # Return an empty list in case of error
 
-# # To run here 
-# import asyncio
+# To run here 
+import asyncio
 
-# # Make sure the code below is wrapped in an asynchronous entry point
-# async def main():
-#     jobs = await get_messages()
-#     print(json.dumps(jobs, indent=4))
+# Make sure the code below is wrapped in an asynchronous entry point
+async def main():
+    jobs = await get_messages()
+    print(json.dumps(jobs, indent=4))
 
-# if __name__ == "__main__":
-#     asyncio.run(main())  # To execute the async code from the main thread
+if __name__ == "__main__":
+    asyncio.run(main())  # To execute the async code from the main thread
 

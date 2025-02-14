@@ -24,3 +24,5 @@ async def get_jobs():
             return {"message": "No jobs found"}
     except Exception as e:
         return {"error": str(e)}
+
+# use `uvicorn app:app --reload` to run the app
